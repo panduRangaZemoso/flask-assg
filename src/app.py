@@ -4,6 +4,8 @@ from exts import db,marshmallow,migrate
 from api.TaskApi import taskApi
 from api.UserApi import userApi
 
+import os
+
 def registerExtensions(app):
     db.init_app(app)
     marshmallow.init_app(app)
@@ -14,7 +16,7 @@ def createFlaskApp():
     app = Flask(__name__)
 
     # Add Config
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/task_db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['SQLALCHEMY_DATABASE_URI']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Register Extensions
