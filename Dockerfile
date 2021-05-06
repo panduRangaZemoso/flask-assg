@@ -3,7 +3,7 @@ FROM python:3.8-alpine
 WORKDIR /src/app
 COPY . .
 
-RUN pip install -r src/requirements.txt
+RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
