@@ -7,6 +7,13 @@ on:
   push:
     branches: [ main ]
 
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: cluster-1    # TODO: update to cluster name
+  GKE_ZONE: asia-south1-c   # TODO: update to cluster zone
+  DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
+  IMAGE: flask-assg-poc
+
 jobs:
   build:
 
