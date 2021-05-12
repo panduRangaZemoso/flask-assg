@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: gke-test
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: gke-test
@@ -19,11 +19,17 @@ spec:
     spec:
       containers:
       - name: gke-test
-        image: gcr.io/PROJECT_ID/IMAGE:TAG
+        image: gcr.io/zevoice-180404/flask-assg-poc
+        env:
+            - name: SQLALCHEMY_DATABASE_URI
+              value: postgresql://postgres:zemoso123@localhost:5432/task_db
+        imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+          - containerPort: 5000
         resources:
           requests:
             cpu: 100m
           limits:
             cpu: 100m
+      imagePullSecrets:
+        - name: gcr-json-key
