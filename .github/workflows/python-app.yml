@@ -9,10 +9,12 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
-  GKE_CLUSTER: cluster-1    # TODO: update to cluster name
-  GKE_ZONE: asia-south1-c   # TODO: update to cluster zone
-  DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
+  GKE_CLUSTER: cluster-1    
+  GKE_ZONE: asia-south1-c   
+  DEPLOYMENT_NAME: gke-test 
   IMAGE: flask-assg-poc
+  GCR_JSON_KEY: gcr-json-key
+  GCR_EMAIL: panduranga.anantatmula@zemosolabs.com
 
 jobs:
   build:
@@ -30,17 +32,11 @@ jobs:
         registry: gcr.io
         project_id: zevoice-180404
         image_name: flask-assg-poc
-        
-     # Set up kustomize
-    - name: Set up Kustomize
-      run: |-
-        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-        chmod u+x ./kustomize
 
     # Deploy the Docker image to the GKE cluster
-    - name: Deploy
+    - name: Deploy to GKE
       run: |-
-        ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
-        ./kustomize build . | kubectl apply -f -
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
-        kubectl get services -o wide   
+        kubectl create secret docker-registry $GCR_JSON_KEY --docker-server=https://gcr.io --docker-username=_json_key --docker-password="$(openssl enc -base64 -d <<< ${{secrets.GCLOUD_SERVICE_KEY}})" --docker-email= $GCR_EMAIL
+        kubectl apply -f deployment.yml
+        kubectl apply -f service.yml
+        kubectl set image deployment.apps/gke-test gke-test=gcr.io/$PROJECT_ID/$IMAGE:latest   
